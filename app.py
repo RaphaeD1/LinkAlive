@@ -78,15 +78,13 @@ def scan(site_id):
         validate(url)
         robots = RobotFileParser()
         base = urlsplit(url)
-        robots.set_url(base.scheme + "://" + base.netloc + "/robots.txt")
-        try:
-            robots.read()
-            if not robots.can_fetch(UA, url):
-                raise ValueError("robots.txt disallows scan")
-        except ValueError:
-            raise
-        except Exception:
-            raise ValueError("Cannot verify robots.txt permission")
+        robots_url = base.scheme + "://" + base.netloc + "/robots.txt"
+        robot_status, robot_bytes, _ = download(robots_url)
+        if robot_status != 200:
+            raise ValueError("robots.txt unavailable or restricted; skipping scan")
+        robots.parse(robot_bytes.decode("utf-8", "replace").splitlines())
+        if not robots.can_fetch(UA, url):
+            raise ValueError("robots.txt disallows scan")
         status, html, final = download(url)
         count += 1
         if status >= 400: issues.append((url, url, status, "Homepage HTTP error"))
