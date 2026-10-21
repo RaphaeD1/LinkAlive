@@ -37,3 +37,20 @@ Visit http://localhost:8080 and enter the configured admin token.
 This code is an **initial prototype**. It does **not** yet discover prospects automatically, send emails, accept payments, repair third-party sites, execute distributed hybrid audits or sustain 100,000 websites/hour. It requires runtime testing, security hardening and production integrations.
 
 Only scan properties you own or are authorized to assess. Respect access restrictions and rate limits. Prevent private-network access at the deployment's outbound firewall; application-only URL filtering cannot fully prevent DNS rebinding or related attacks. Scans may produce false positives. Do not automatically send unsolicited mass outreach.
+
+## Hybrid batch auditing (prototype)
+
+Authenticated API endpoints:
+
+- `POST /api/hybrid/jobs` with JSON `{"urls":["https://example.com","https://example.org"]}` queues fast audits of up to 200 URLs by default.
+- `GET /api/hybrid/jobs/{job_id}` returns job progress and per-site results.
+- `POST /api/hybrid/items/{item_id}/deep` queues a selected site for deeper scanning.
+- The admin token is required in the `X-Admin-Token` header for all these routes.
+
+Configuration: `HYBRID_MAX_BATCH=200`, `HYBRID_WORKERS=4`, and `HYBRID_REQUEST_DELAY=2` (minimum delay 1 second). These controls do not guarantee any particular throughput. Background batch work currently runs in process and can be interrupted by deployments or restarts. Production use needs persistent queues and retry/recovery logic.
+
+### Business launch reality check
+
+The code can save and scan website URLs supplied by an administrator. It does **not** automatically find owner contact details, send sales emails, handle payments, or fix customer sites. Those workflows require source permissions, explicit outreach compliance, customer authorization, integrations, and more production engineering.
+
+Only scan sites where you have permission to do so. The URL checks are not a substitute for network egress firewalls or a formal security assessment. GitHub Actions compilation/smoke-test success is not a full production security audit.
