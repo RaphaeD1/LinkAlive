@@ -165,6 +165,8 @@ def rescan_due():
         with lock: scan(site_id)
 
 init()
+from hybrid import register_hybrid
+register_hybrid(app, db, authorized, validate, download, scan)
 if os.getenv("ENABLE_SCHEDULER", "0") == "1":
     scheduler=BackgroundScheduler(daemon=True)
     scheduler.add_job(rescan_due,"interval",hours=1,max_instances=1,coalesce=True)
