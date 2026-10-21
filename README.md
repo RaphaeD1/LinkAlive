@@ -54,3 +54,12 @@ Configuration: `HYBRID_MAX_BATCH=200`, `HYBRID_WORKERS=4`, and `HYBRID_REQUEST_D
 The code can save and scan website URLs supplied by an administrator. It does **not** automatically find owner contact details, send sales emails, handle payments, or fix customer sites. Those workflows require source permissions, explicit outreach compliance, customer authorization, integrations, and more production engineering.
 
 Only scan sites where you have permission to do so. The URL checks are not a substitute for network egress firewalls or a formal security assessment. GitHub Actions compilation/smoke-test success is not a full production security audit.
+
+## Prospect pipeline (manual and review-first)
+
+- `POST /api/prospects` with `{"site_id":1,"business":"Example Co","email":"owner@example.com","contact_source":"public business contact page"}` records a prospect whose website has already been saved.
+- `GET /api/prospects` lists CRM entries.
+- `PATCH /api/prospects/{id}` updates `stage` or the boolean `opted_out`.
+- `GET /api/prospects/{id}/draft` generates a draft **only when qualifying HTTP errors are present in the stored audit**. It never sends email.
+
+All endpoints require `X-Admin-Token`. The operator must independently verify contact information, website issues, and compliance. Do not assume this application has permission to contact arbitrary addresses or to repair someone else's site.
