@@ -59,7 +59,7 @@ def download(url, method="GET"):
                 continue
             chunks = []
             length = 0
-            if method == "GET" and "text/html" in r.headers.get("content-type", "").lower():
+            if method == "GET" and any(t in r.headers.get("content-type", "").lower() for t in ("text/html", "text/plain")):
                 for ch in r.iter_content(8192):
                     length += len(ch)
                     if length > 500000: break
