@@ -164,7 +164,9 @@ def rescan_due():
 
 init()
 from hybrid import register_hybrid
+from prospects import register_prospects
 register_hybrid(app, db, authorized, validate, download, scan)
+register_prospects(app, db, authorized)
 if os.getenv("ENABLE_SCHEDULER", "0") == "1":
     scheduler=BackgroundScheduler(daemon=True)
     scheduler.add_job(rescan_due,"interval",hours=1,max_instances=1,coalesce=True)
