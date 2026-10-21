@@ -14,7 +14,7 @@ jobs:
       - name: Install application dependencies
         run: pip install -r requirements.txt
       - name: Compile Python sources
-        run: python -m compileall -q app.py hybrid.py
+        run: python -m compileall -q app.py hybrid.py prospects.py
       - name: Smoke test API (no external network)
         env:
           ADMIN_TOKEN: ci-test-token
@@ -27,7 +27,9 @@ jobs:
           assert c.get('/health').status_code == 200
           assert c.get('/api/sites').status_code == 401
           assert c.get('/api/hybrid/jobs/1').status_code == 401
+          assert c.get('/api/prospects').status_code == 401
           assert c.get('/api/sites',headers={'X-Admin-Token':'ci-test-token'}).status_code == 200
           assert c.get('/api/hybrid/jobs/1',headers={'X-Admin-Token':'ci-test-token'}).status_code == 404
+          assert c.get('/api/prospects',headers={'X-Admin-Token':'ci-test-token'}).status_code == 200
           print("Smoke tests passed")
           PY
